@@ -1,0 +1,9 @@
+error: Esto es un mensaje de error (desarrollo)
+error: Esto es un mensaje de error (desarrollo)
+error: error
+error: productionLogger.fatal is not a function
+error: Esto es un mensaje de error (desarrollo)
+error: error
+error: userManager.getByEmail is not a function
+error: error
+error: userManager.getById is not a function

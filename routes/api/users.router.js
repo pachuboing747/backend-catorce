@@ -7,6 +7,6 @@ const {
 const router = Router()
 
 router.post('/', create)
-router.put('/users/premium/:uid', changeUserRole);
+router.put('/premium/:uid', changeUserRole);
 
 module.exports = router

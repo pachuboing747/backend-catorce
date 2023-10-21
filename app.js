@@ -23,6 +23,7 @@
   const loggerMidleware = require ("./middlewares/logger.middleware.js")
 
   const cartRouter = require("./routes/carts.router.js")
+  const userRouter = require("./routes/api/users.router.js")
 
   console.log(config)
 
@@ -75,6 +76,8 @@
       req.io = io
       next()
     }, Routes.api, cartRouter)
+    app.use('/api/user', userRouter);
+
 
     app.get('/loggerTest', (req, res) => {
       productionLogger.error('Esto es un mensaje de error (desarrollo)');

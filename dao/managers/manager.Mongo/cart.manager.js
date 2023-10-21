@@ -24,11 +24,15 @@ class CartManager {
         return cartId[0]
     }
 
-    async addProductCart (cid, idProduct) {
+    async addProductCart (cid, idProduct, userId, isPremiumUser) {
 
         let cart = await cartModel.findOne({_id: cid})
 
         const product = await productModel.findOne({_id: idProduct})
+
+        if (isPremiumUser && product.owner === userId) {
+            return;
+        }
 
         const p = cart.products.find(pr => pr.product.equals(product._id))
 

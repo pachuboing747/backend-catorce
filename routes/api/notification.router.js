@@ -7,10 +7,19 @@ const router = Router()
 router.get("/mail", (req, res) =>{
 
   const resetLink = "http://localhost:8080/resetpassword"
+  const timestamp = req.query.timestamp;
 
-  mailSender.send(mail.GMAIL_ADDRESS, resetLink)
+  if (Date.now() - timestamp > 3600000) {
+    const newResetLink = "http://localhost:8080/resetpassword";
+    mailSender.send(mail.GMAIL_ADDRESS, newResetLink);
+    res.send("Nuevo correo de recuperación de contraseña enviado.");
+  }else{
 
-  res.send("Ok")
+    mailSender.send(mail.GMAIL_ADDRESS, resetLink)
+    res.send("Ok")
+
+  }
+
 })
 
 

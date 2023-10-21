@@ -3,6 +3,10 @@ const productModel = require('../../models/product.model.js')
 class ProductManager {
 
     async addProduct ( producto ) {
+
+        if (!producto.owner) {
+            producto.owner = 'admin';
+        }
         
         const product = await productModel.create( producto )
 
@@ -71,17 +75,41 @@ class ProductManager {
     }
     
     async updateProduct (id, product) {
-        
-        const result = await productModel.updateOne({ _id: id }, product)
 
-        return result
+        const existingProduct = await productModel.findById(id);
+
+        if (!existingProduct) {
+            return null;
+        }
+
+        if (existingProduct.owner !== 'admin' && existingProduct.owner !== userId) {
+            return null;
+        }
+
+        if (isAdmin || existingProduct.owner ===  "admin" || existingProduct.owner === userId){
+            const result = await productModel.updateOne({ _id: id }, product);
+            return result;
+        }else{
+            return null;
+        }
+        
+       
     }
 
-    async deleteProduct (id) {
-        
-        const result = await productModel.deleteOne({ _id: id })
+    async deleteProduct (id, userId, isAdmin) {
 
-        return result
+        const existingProduct = await productModel.findById(id);
+
+        if (!existingProduct) {
+            return null;
+        }
+        if (isAdmin || existingProduct.owner === userId){
+
+            const result = await productModel.deleteOne({ _id: id })
+            return result
+        }else{
+            return null;
+        } 
         
     }
 

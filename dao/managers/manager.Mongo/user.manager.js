@@ -28,6 +28,10 @@ class UserManager {
         return userModel.deleteOne({ _id: id })
     }
 
+    changeUserRole(id, newRole) {
+        return userModel.updateOne({ _id: id }, { role: newRole });
+    }
+
 }
 
 module.exports = new UserManager()

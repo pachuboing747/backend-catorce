@@ -8,6 +8,7 @@ const schema = new Schema({
   price: Number,
   stock: { type: Number, default: 0 },
   thumbnail: String,
+  owner: { type: String, ref: 'users' }
 })
 
 schema.plugin(paginate)

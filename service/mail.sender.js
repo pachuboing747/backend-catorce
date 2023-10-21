@@ -14,15 +14,18 @@ class MailSender{
         })
     }
 
-    async send(to, body){
-        const response = await  this.transporter.sendMail({
-            from: "no-reply@coder.com",
-            subject:"prueba",
-            to: mail.GMAIL_ADDRESS,
-            html: body
-
-        })
-        console.log(response)
+    async send(to,resetLink) {
+        const subject = "Recuperación de Contraseña";
+        const body = `<p>Para restablecer tu contraseña, haz clic en el siguiente enlace: <a href="${resetLink}">Restablecer Contraseña</a></p>`;
+    
+        const response = await this.transporter.sendMail({
+          from: "no-reply@coder.com",
+          subject: subject,
+          to: mail.GMAIL_ADDRESS,
+          html: body,
+        });
+    
+        console.log(response);
     }
 }
 

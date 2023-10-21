@@ -12,6 +12,7 @@ const schema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'carts',
   },
+  premium: Boolean,
 })
 
 const userModel = model('users', schema)

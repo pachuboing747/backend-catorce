@@ -21,6 +21,9 @@ const signup = async (req, email, password, done) => {
   }
 
   try {
+
+    const cart = await cartManager.addCart()
+
     const newUser = await userManager.create({
       ...user,
       password: hashPassword(password),

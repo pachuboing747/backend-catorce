@@ -3,34 +3,63 @@ const ManagerFactory = require('../dao/managers/manager.Mongo/factory.manager.js
 const userManager = ManagerFactory.getManagerInstance('users')
 
 const create = async (req, res) => {
-    const { body } =  req
+  const { body } =  req
   
-    const created = await userManager.create(body)
+  const created = await userManager.create(body)
   
-    res.send(created)
+  res.send(created)
+}
+
+function checkPermissions(req, res, next) {
+  const usuarioActual = req.user;
+  const productId = req.params.productId;
+
+  if (usuarioActual.role === 'premium' && productId === usuarioActual.email) {
+    next(); 
+  } else if (usuarioActual.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'No tienes permiso para realizar esta acción.' });
+  }
 }
 
 const changeUserRole = async (req, res) => {
-    const userId = req.params.uid;
-    const newRole = req.body.role;
-  
+  const userId = req.params.uid; 
+  const newRole = req.body.role;
+
+  if (req.isAuthenticated()) {
     try {
-      const result = await userManager.changeUserRole(userId, newRole);
-  
-      if (result.modified === 0) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
+      const userToChange = await userManager.getById(userId);
+
+      if (!userToChange) {
+        return res.status(404).json({ message: 'Usuario no encontrado.' });
       }
-  
-      res.status(200).json({ message: 'Rol de usuario actualizado con éxito' });
+
+      if (req.user.role === 'admin' ||req.user.role === 'customer' ) {
+        userToChange.role = newRole;
+
+        await userToChange.save();
+
+        return res.status(200).json({ message: 'Rol de usuario actualizado con éxito' });
+      } else {
+        return res.status(403).json({ message: 'No tienes permiso para realizar esta acción.' });
+      }
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Error al actualizar el rol de usuario' });
+      return res.status(500).json({ message: 'Error al actualizar el rol de usuario' });
     }
-    
-}
+  }
+  // } else {
+  //   return res.status(403).json({ message: 'No estás autenticado.' });
+
+  // }
+};
+
+
 
 
 module.exports = {
     create,
+    checkPermissions,
     changeUserRole
 }

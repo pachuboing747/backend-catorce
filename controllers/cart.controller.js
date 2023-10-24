@@ -9,6 +9,7 @@ const mailSenderService = require('../service/mail.sender.js')
 
 const CartModel = require ("../dao/models/cart.model.js")
 const {lastname, firstname} = require ("../dao/models/user.model.js")
+const {checkPermissions} = require("../controllers/user.controller.js")
 
 
 const getAll = async (req, res) => {
@@ -55,32 +56,39 @@ const populate = async (req, res) => {
 }
 
 const create = async (req, res) => {
-    const { body, io } = req;
+  const { body, io } = req;
+  const usuarioActual = req.user;
+  const productId = req.params.productId;
   
+  if (usuarioActual.role === 'premium' && productId === usuarioActual.email) {
+    res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito.' });
+  } else {
     try {
-      const cart = new CartModel({
-        products: [
-          {
-            product: body.productId,
-            qty: 1,
-            title: body.title,
-            description: body.description,
-            price: body.price,
-            thumbnail: body.thumbnail,
-            code: body.code,
-            stock: body.stock,
-          },
-        ],
-      });
-  
-      const savedCart = await cart.save();
+    const cart = new CartModel({
+      products: [
+      {
+        product: body.productId,
+        qty: 1,
+        title: body.title,
+        description: body.description,
+        price: body.price,
+        thumbnail: body.thumbnail,
+        code: body.code,
+        stock: body.stock,
+      },
+      ],
+    });
+    
+    const savedCart = await cart.save();
       io.emit("newProduct", savedCart);
-  
+    
       res.status(201).send(savedCart);
     } catch (error) {
       console.error("Error al crear el carrito:", error);
       res.status(500).send("Ocurrió un error al crear el carrito");
     }
+  }
+   
 }
 
 const deleteId = async (req, res) => {

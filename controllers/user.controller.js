@@ -24,7 +24,7 @@ function checkPermissions(req, res, next) {
 }
 
 const changeUserRole = async (req, res) => {
-  const userId = req.params.uid; 
+  const userId = req.params.uid; // Obten el ID del usuario a partir de los parámetros de la solicitud
   const newRole = req.body.role;
 
   if (req.isAuthenticated()) {
@@ -35,9 +35,10 @@ const changeUserRole = async (req, res) => {
         return res.status(404).json({ message: 'Usuario no encontrado.' });
       }
 
-      if (req.user.role === 'admin' ||req.user.role === 'customer' ) {
+      if (req.user.role === 'admin') {
         userToChange.role = newRole;
 
+  
         await userToChange.save();
 
         return res.status(200).json({ message: 'Rol de usuario actualizado con éxito' });
@@ -48,11 +49,9 @@ const changeUserRole = async (req, res) => {
       console.error(error);
       return res.status(500).json({ message: 'Error al actualizar el rol de usuario' });
     }
+  } else {
+    return res.status(403).json({ message: 'No estás autenticado.' });
   }
-  // } else {
-  //   return res.status(403).json({ message: 'No estás autenticado.' });
-
-  // }
 };
 
 

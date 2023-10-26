@@ -1,20 +1,14 @@
 const passport = require('passport');
 
 function isAuthenticated(req, res, next) {
-  passport.authenticate('local-login', (err, user, info) => {
-    if (err) {
-      return next(err);
+  if (req.isAuthenticated()) {
+    if (req.user.role === 'Customer' || req.user.role === 'Premium') {
+    
+      return next();
     }
-    if (!user) {
-      return res.status(401).json({ message: 'No estás autenticado.' });
-    }
-    req.logIn(user, (loginErr) => {
-      if (loginErr) {
-        return next(loginErr);
-      }
-      next();
-    });
-  })(req, res, next);
+  }
+
+  res.status(401).json({ message: 'No estás autorizado para realizar esta acción.' });
 }
 
 module.exports = isAuthenticated;
